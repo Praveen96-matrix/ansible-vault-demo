@@ -1,0 +1,27 @@
+name: Ansible Vault Demo
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:   # allows manual trigger
+
+jobs:
+  run-ansible:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Ansible
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ansible
+
+    - name: Run Ansible Playbook
+      env:
+        VAULT_PASS: ${{ secrets.VAULT_PASSWORD }}   # GitHub secret
+      run: |
+        echo "$VAULT_PASS" > vault_pass.txt
+        ansible-playbook playbooks/show-secret.yml --vault-password-file vault_pass.txt
